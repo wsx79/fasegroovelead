@@ -1,0 +1,23 @@
+﻿Fase Groove Lead is installed!
+
+VST3 PLUG-IN
+- Open your DAW and rescan the plug-ins if it doesn't find it by itself.
+- Load "Fase Groove Lead" as an INATTACKENT on a MIDI / instrument track.
+- Installed in: C:\Program Files\Common Files\VST3\Fase Groove Lead.vst3
+
+STANDALONE APP
+- Start it from the Start menu. There is no DAW: press PLAY (or the space bar) to hear the grooves.
+
+FIRST STEPS
+1. Pick a groove (click the groove's name: the groove browser opens).
+2. Press PLAY.
+3. Pick the chords (CHORDS panel), or hold a chord on the MIDI input with MIDI IN on.
+4. Drag the orange "DRAG MIDI TO DAW" tile onto a lead (or keys) track.
+
+User guide: docs\GUIDE.md in the installation folder - https://github.com/wsx79/fasegroovelead
+
+Fase Groove Lead is free and open source. If you like it you can support it:
+Ko-fi: https://ko-fi.com/fabios1979  -  PayPal: https://paypal.me/fabios79
+Listen to my music: https://open.spotify.com/artist/29iQGuXML8LEw3xRp1dNRP
+
+Thank you! - Fabio 'Pitch' Serra

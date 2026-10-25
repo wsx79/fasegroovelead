@@ -1,0 +1,35 @@
+name: Update release notes
+
+# Rewrites the text of an existing GitHub Release from CHANGELOG.md, without rebuilding.
+# Actions -> Update release notes -> Run workflow -> tag (e.g. v1.1.0).
+# Tick "latest" to move the Latest badge to that release (e.g. after publishing an old version).
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Release tag to update (e.g. v1.1.0)"
+        required: true
+      latest:
+        description: "Also mark this release as Latest"
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+jobs:
+  notes:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Release notes from CHANGELOG.md
+        run: .github/scripts/release-notes.sh "${{ inputs.tag }}" > release-notes.md
+
+      - name: Update the release text only
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          args=(--notes-file release-notes.md --title "Fase Groove Lead ${{ inputs.tag }}")
+          if [ "${{ inputs.latest }}" = "true" ]; then args+=(--latest); fi
+          gh release edit "${{ inputs.tag }}" "${args[@]}"

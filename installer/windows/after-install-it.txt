@@ -1,0 +1,23 @@
+﻿Fase Groove Lead è installato!
+
+PLUGIN VST3
+- Apri la tua DAW e rifai la scansione dei plugin se non lo trova da sola.
+- Carica "Fase Groove Lead" come ATTACKENTO su una traccia MIDI/strumento.
+- Installato in: C:\Program Files\Common Files\VST3\Fase Groove Lead.vst3
+
+APP STANDALONE
+- Avviala dal menu Start. Non c'è una DAW: premi PLAY (o la barra spaziatrice) per sentire i groove.
+
+PRIMI PASSI
+1. Scegli un groove (clic sul nome del groove: si apre il browser dei groove).
+2. Premi PLAY.
+3. Scegli gli accordi (pannello ACCORDI), oppure tieni un accordo sull'ingresso MIDI con MIDI IN attivo.
+4. Trascina il riquadro arancione "TRASCINA MIDI NELLA DAW" su una traccia di chitarra (o tastiera).
+
+Guida di utilizzo: docs\GUIDA.md nella cartella di installazione - https://github.com/wsx79/fasegroovelead
+
+Fase Groove Lead è gratuito e open source. Se ti piace puoi supportarlo:
+Ko-fi: https://ko-fi.com/fabios1979  -  PayPal: https://paypal.me/fabios79
+Ascolta la mia musica: https://open.spotify.com/artist/29iQGuXML8LEw3xRp1dNRP
+
+Grazie! - Fabio 'Pitch' Serra

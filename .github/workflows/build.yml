@@ -1,0 +1,194 @@
+name: Build
+
+# Builds run only where they matter, to save GitHub Actions minutes:
+# pushes to main (not for docs-only changes), pull requests, version tags,
+# and manual runs (Actions -> Build -> Run workflow, optionally publishing a release).
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+    paths-ignore: ["**.md", "docs/**", "LICENSE"]
+  pull_request:
+    paths-ignore: ["**.md", "docs/**", "LICENSE"]
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: "Version to publish as a GitHub Release (e.g. v1.0.0). Leave empty for a plain build."
+        required: false
+        default: ""
+
+permissions:
+  contents: write
+
+# A newer push to the same branch cancels the older, still-running build.
+concurrency:
+  group: build-${{ github.ref }}-${{ github.event_name }}
+  cancel-in-progress: ${{ github.event_name != 'workflow_dispatch' }}
+
+jobs:
+  build:
+    name: ${{ matrix.name }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: Windows
+            os: windows-latest
+            package: FaseGrooveLead-Windows
+          - name: macOS
+            os: macos-latest
+            package: FaseGrooveLead-macOS
+          - name: Linux
+            os: ubuntu-latest
+            package: FaseGrooveLead-Linux
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Linux dependencies
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libasound2-dev libx11-dev libxrandr-dev libxinerama-dev \
+            libxcursor-dev libxext-dev libfreetype-dev libfontconfig1-dev libxcomposite-dev
+
+      - name: Configure
+        run: cmake -B build -DCMAKE_BUILD_TYPE=Release
+
+      - name: Build
+        run: cmake --build build --config Release --parallel 4
+
+      - name: Engine tests
+        run: ctest --test-dir build -C Release --output-on-failure
+
+      - name: Diagnose Linux test failure
+        if: failure() && runner.os == 'Linux'
+        run: gdb --batch -ex run -ex 'thread apply all bt' --args ./build/fgl_plugin_tests_artefacts/Release/fgl_plugin_tests
+
+      - name: Render all thirteen family profiles and retain Jackin evidence
+        if: runner.os == 'Linux'
+        run: ./build/fgl_plugin_tests_artefacts/Release/fgl_plugin_tests --family-audio family-audio
+
+      - uses: actions/upload-artifact@v4
+        if: runner.os == 'Linux' && always()
+        with:
+          name: Family-audio-evidence
+          path: family-audio/
+
+      - name: Render interface screenshots (Windows)
+        if: runner.os == 'Windows'
+        run: ./build/fgl_plugin_tests_artefacts/Release/fgl_plugin_tests.exe --screenshots screenshots 1
+
+      - uses: actions/upload-artifact@v4
+        if: runner.os == 'Windows'
+        with:
+          name: interface-screenshots-lead
+          path: screenshots/*.png
+
+      # macOS signing. Without the secrets below the plug-in is signed ad hoc (as before).
+      # With an Apple Developer account, add these repository secrets and every release is
+      # signed with your Developer ID, notarized by Apple and stapled (no Gatekeeper warning):
+      #   MACOS_CERTIFICATE           base64 of the "Developer ID Application" .p12
+      #   MACOS_CERTIFICATE_PASSWORD  password of that .p12
+      #   MACOS_SIGN_IDENTITY         e.g. "Developer ID Application: Your Name (TEAMID)"
+      #   APPLE_ID, APPLE_APP_PASSWORD (app-specific password), APPLE_TEAM_ID
+      - name: Sign and notarize (macOS)
+        if: runner.os == 'macOS'
+        env:
+          MACOS_CERTIFICATE: ${{ secrets.MACOS_CERTIFICATE }}
+          MACOS_CERTIFICATE_PASSWORD: ${{ secrets.MACOS_CERTIFICATE_PASSWORD }}
+          MACOS_SIGN_IDENTITY: ${{ secrets.MACOS_SIGN_IDENTITY }}
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_APP_PASSWORD: ${{ secrets.APPLE_APP_PASSWORD }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+        run: |
+          BUNDLES=(build/FaseGrooveLead_artefacts/Release/VST3/*.vst3
+                   build/FaseGrooveLead_artefacts/Release/AU/*.component
+                   build/FaseGrooveLead_artefacts/Release/Standalone/*.app)
+
+          if [ -z "$MACOS_CERTIFICATE" ]; then
+            echo "No Developer ID certificate: ad-hoc signing."
+            for f in "${BUNDLES[@]}"; do codesign --force --deep --sign - "$f"; done
+            exit 0
+          fi
+
+          # Temporary keychain with the Developer ID certificate.
+          KEYCHAIN="$RUNNER_TEMP/signing.keychain-db"
+          echo "$MACOS_CERTIFICATE" | base64 --decode > "$RUNNER_TEMP/cert.p12"
+          security create-keychain -p ci "$KEYCHAIN"
+          security set-keychain-settings -lut 21600 "$KEYCHAIN"
+          security unlock-keychain -p ci "$KEYCHAIN"
+          security import "$RUNNER_TEMP/cert.p12" -P "$MACOS_CERTIFICATE_PASSWORD" -A -t cert -f pkcs12 -k "$KEYCHAIN"
+          security set-key-partition-list -S apple-tool:,apple: -s -k ci "$KEYCHAIN"
+          security list-keychains -d user -s "$KEYCHAIN" $(security list-keychains -d user | tr -d '"')
+
+          for f in "${BUNDLES[@]}"; do
+            codesign --force --deep --options runtime --timestamp --sign "$MACOS_SIGN_IDENTITY" "$f"
+            ditto -c -k --keepParent "$f" "$RUNNER_TEMP/notarize.zip"
+            xcrun notarytool submit "$RUNNER_TEMP/notarize.zip" --apple-id "$APPLE_ID" \
+              --password "$APPLE_APP_PASSWORD" --team-id "$APPLE_TEAM_ID" --wait
+            xcrun stapler staple "$f"
+          done
+
+      - name: Package
+        shell: bash
+        run: |
+          mkdir -p dist
+          cd build/FaseGrooveLead_artefacts/Release
+          for dir in VST3 AU Standalone; do
+            [ -d "$dir" ] && cp -R "$dir" "$GITHUB_WORKSPACE/dist/"
+          done
+          cd "$GITHUB_WORKSPACE"
+          cp README.md README.it.md CHANGELOG.md CHANGELOG.it.md LICENSE \
+             PRIVACY.md PRIVACY.it.md THIRD_PARTY_NOTICES.md THIRD_PARTY_NOTICES.it.md dist/
+          cp docs/GUIDE.md docs/GUIDA.md dist/
+          if [ "$RUNNER_OS" = "Windows" ]; then
+            7z a "${{ matrix.package }}.zip" ./dist/*
+          else
+            (cd dist && zip -qry "../${{ matrix.package }}.zip" .)
+          fi
+
+      - name: Windows installer (Inno Setup)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $version = (Select-String -Path CMakeLists.txt -Pattern 'project\(FaseGrooveLead VERSION ([0-9.]+)').Matches[0].Groups[1].Value
+          $iscc = "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe"
+          if (-not (Test-Path $iscc)) { choco install innosetup -y --no-progress }
+          & $iscc "/DAppVersion=$version" "/DBuildDir=$env:GITHUB_WORKSPACE\build\FaseGrooveLead_artefacts\Release" "/DRepoDir=$env:GITHUB_WORKSPACE" installer\windows\FaseGrooveLead.iss
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          Copy-Item installer-output\FaseGrooveLead-Windows-Setup.exe .
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.package }}
+          path: |
+            ${{ matrix.package }}.zip
+            FaseGrooveLead-Windows-Setup.exe
+
+  release:
+    name: Publish release
+    needs: build
+    if: startsWith(github.ref, 'refs/tags/v') || inputs.release_tag != ''
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          path: packages
+          merge-multiple: true
+
+      - name: Release notes from CHANGELOG.md
+        run: .github/scripts/release-notes.sh "${{ inputs.release_tag || github.ref_name }}" > release-notes.md
+
+      - uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ inputs.release_tag || github.ref_name }}
+          target_commitish: ${{ github.sha }}
+          name: Fase Groove Lead ${{ inputs.release_tag || github.ref_name }}
+          files: |
+            packages/*.zip
+            packages/*.exe
+          body_path: release-notes.md

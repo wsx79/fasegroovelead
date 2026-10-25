@@ -1,0 +1,9 @@
+build/
+installer-output/
+build-*/
+cmake-build-*/
+.vs/
+.vscode/
+.idea/
+*.user
+.DS_Store
