@@ -2730,6 +2730,11 @@ FaseGrooveLeadEditor::FaseGrooveLeadEditor (FaseGrooveLeadProcessor& p)
     laneBox.onChange = [this] { pickedFromMenu (laneBox); selectLane (laneBox.getSelectedId() - 1); };
     for (int o = -2; o <= 2; ++o)
         octaveBox.addItem (o == 0 ? juce::String ("0") : (o > 0 ? "+" : "") + juce::String (o), o + 3);
+    for (int o = -2; o <= 2; ++o)
+        globalOctaveBox.addItem ((o > 0 ? "+" : "") + juce::String (o), o + 3);
+    Localisation::bindTip (globalOctaveBox, "Transpose every lead lane by octaves, keeping its own octave offset");
+    globalOctaveAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ComboBoxAttachment> (p.apvts, ParamIDs::globalOctave, globalOctaveBox);
+    show (globalOctaveBox);
     Localisation::bindTip (octaveBox, "This lane up or down by octaves (the voicing keeps its shape)");
     octaveBox.onChange = [this]
     {
@@ -3267,6 +3272,7 @@ void FaseGrooveLeadEditor::layout()
     laneDiceButton.setBounds (202, 268, 34, 28);
     muteButton.setBounds (240, 268, 56, 28);
     octaveBox.setBounds (34, 318, 70, 26);
+    globalOctaveBox.setBounds (174, 378, 122, 26);
     hearButton.setBounds (108, 318, 72, 26);
     levelKnob.setBounds (184, 314, 56, 58);
     volumeKnob.setBounds (242, 314, 58, 58);
@@ -3423,6 +3429,7 @@ void FaseGrooveLeadEditor::paintContent (juce::Graphics& g)
     caption (processor.steps() > 32 ? "Parts A-D (one bar each: play them in any order)" : "Parts A-D (each half a bar: play them in any order)", 430, 104, 400);
     caption ("Lane", 34, 252);
     caption ("Octave", 34, 302);
+    caption ("Global octave", 34, 383, 138);
     caption ("Level", 186, 300, 54);
     caption ("Volume", 242, 300, 58);
     caption ("Attack delay", 1034, 299, 116);
@@ -3443,7 +3450,7 @@ void FaseGrooveLeadEditor::paintContent (juce::Graphics& g)
         fgl::NoteList notes;
         const int step = ppq >= 0.0 ? (int) std::fmod (std::floor (ppq / fgl::stepLength), 32.0) : 0;
         fgl::laneNotes ((fgl::Lane) selectedLane, harmony, fgl::voiceChord (harmony), step,
-                        processor.laneOctave (selectedLane), notes, context.roomForBand, false,
+                        processor.laneOctave (selectedLane) + context.globalOctave, notes, context.roomForBand, false,
                         context.pattern == fgl::randomPatternIndex() ? fgl::lickContourFor (context.randomGenre) : 0,
                         context.key, context.scale, context.riffSeed);
         juce::StringArray names;

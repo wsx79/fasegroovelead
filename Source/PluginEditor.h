@@ -500,7 +500,8 @@ private:
 
     // Lead part (the lane picked)
     int selectedLane = 0;
-    juce::ComboBox laneBox, octaveBox;
+    juce::ComboBox laneBox, octaveBox, globalOctaveBox;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::ComboBoxAttachment> globalOctaveAttachment;
     juce::TextButton hearButton { "HEAR IT" }, muteButton { "MUTE" };
     IconButton laneDiceButton { IconButton::Icon::dice };
     juce::Slider levelKnob, volumeKnob;

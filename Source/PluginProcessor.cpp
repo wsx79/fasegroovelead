@@ -200,6 +200,8 @@ juce::AudioProcessorValueTreeState::ParameterLayout FaseGrooveLeadProcessor::cre
                                                     { return String (v, 1) + " dB"; })));
     group ("sound", "Sound");
 
+    add (std::make_unique<AudioParameterInt> (ParameterID { ParamIDs::globalOctave, 1 }, "Global octave", -2, 2, 0));
+
     // Lanes: per lane, mute, octave and level
     for (int l = 0; l < fgl::numLanes; ++l)
     {
@@ -333,6 +335,7 @@ void FaseGrooveLeadProcessor::setParameterFromUI (const juce::String& id, float 
 fgl::LeadSettings FaseGrooveLeadProcessor::currentSettings() const
 {
     fgl::LeadSettings s;
+    s.globalOctave = juce::roundToInt (raw (ParamIDs::globalOctave));
     s.key = juce::roundToInt (raw (ParamIDs::key));
     s.scale = juce::roundToInt (raw (ParamIDs::scale));
     s.pattern = juce::roundToInt (raw (ParamIDs::pattern));
@@ -1268,7 +1271,7 @@ void FaseGrooveLeadProcessor::processBlock (juce::AudioBuffer<float>& buffer, ju
         const auto voicing = fgl::voiceChord (chord, nullptr, settings.roomForBand);
         fgl::NoteList notes;
         fgl::laneNotes ((fgl::Lane) auditionLane, chord, voicing, (int) std::floor (ppq / fgl::stepLength) % 16,
-                        settings.octaves[(size_t) auditionLane], notes, settings.roomForBand, false, 0, settings.key, settings.scale, settings.riffSeed);
+                        settings.octaves[(size_t) auditionLane] + settings.globalOctave, notes, settings.roomForBand, false, 0, settings.key, settings.scale, settings.riffSeed);
         if (auditionLane == (int) fgl::Lane::answer)
             std::reverse (notes.begin(), notes.end());   // high to low
         auditionCount = juce::jmin ((int) notes.size(), (int) auditionNotes.size());

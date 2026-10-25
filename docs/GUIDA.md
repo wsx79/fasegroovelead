@@ -68,6 +68,8 @@ La stessa disposizione di Fase Groove Piano, Drums e Guitar:
   traccia di Lead: la melodia segue l'armonia con il proprio ritmo. Una nota sola fornisce un
   riferimento di fondamentale e quinta. Spento, il MIDI in ingresso passa e suona il synth guida.
 
+**Ottava generale** traspone tutte le corsie Lead insieme (da −2 a +2), mantenendo gli scostamenti delle singole corsie. Si salva nei preset ed è automatizzabile nella DAW.
+
 ## 5. La griglia
 
 12 corsie di frase × 32 step (due battute di sedicesimi, oppure 64 step con parti di una battuta):

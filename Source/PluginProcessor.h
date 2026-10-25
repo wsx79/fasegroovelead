@@ -91,6 +91,7 @@ namespace ParamIDs
 
     inline juce::String segment (int index) { return "segment" + juce::String (index + 1); }
     inline juce::String mute (int lane)  { return "mute" + juce::String (lane + 1); }
+    inline const juce::String globalOctave { "globalOctave" };
     inline juce::String octave (int lane) { return "octave" + juce::String (lane + 1); }        // a lane up or down by octaves
     inline juce::String chordRoot (int slot) { return "chordRoot" + juce::String (slot + 1); }
     inline juce::String chordType (int slot) { return "chordType" + juce::String (slot + 1); }

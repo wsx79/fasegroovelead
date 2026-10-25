@@ -67,6 +67,8 @@ The same layout as Fase Groove Piano, Drums and Guitar:
   the melody follows that harmony with its own rhythm. A single held note supplies root/fifth
   context. With MIDI IN off, incoming MIDI passes through and plays the guide synth.
 
+**Global octave** transposes all lead lanes together (−2 to +2), relative to each lane’s octave. It is saved in presets and can be automated in the DAW.
+
 ## 5. The grid
 
 12 phrase lanes × 32 steps (two bars of 16ths, or 64 steps with one-bar parts):

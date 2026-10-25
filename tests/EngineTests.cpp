@@ -37,6 +37,14 @@ static bool equal (const std::vector<NoteEvent>& a, const std::vector<NoteEvent>
 int main()
 {
     LeadSettings s;
+    // A global register change preserves rhythm, dynamics and relative lane offsets.
+    s.roomForBand=false;s.fillEveryBars=0;s.variationEvery=0;
+    const auto original=GrooveEngine::renderClip(s,8);
+    s.globalOctave=1;const auto higher=GrooveEngine::renderClip(s,8);
+    CHECK(original.size()==higher.size());
+    for(size_t i=0;i<original.size();++i){CHECK(original[i].ppq==higher[i].ppq);CHECK(original[i].velocity==higher[i].velocity);CHECK(original[i].lane==higher[i].lane);if(!original[i].isController()&&original[i].lane!=keyswitchLane)CHECK(higher[i].note==original[i].note+12);}
+    CHECK(s.octaves==LeadSettings().octaves);
+    s=LeadSettings();
     for (int p = 0; p < (int) leadPatterns().size(); ++p)
     {
         s.pattern = p;

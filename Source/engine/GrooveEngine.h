@@ -60,6 +60,7 @@ struct LeadSettings
     ChordTones liveChord {};
     float attackMs = 12.0f;                 // the time between two strings of a strum
 
+    int globalOctave = 0; // relative to every lane; never changes its saved octave
     std::array<int, numLanes> octaves {};  // each lane up or down by octaves (0 = as voiced)
     std::array<float, numLanes> levels {}; // velocity scale of each lane (1 = as written)
     std::array<bool, numLanes> muted {};

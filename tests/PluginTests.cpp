@@ -139,6 +139,7 @@ namespace
         a.setParameterFromUI (ParamIDs::swing, 0.4f);
         a.setParameterFromUI (ParamIDs::kit, 2.0f);
         a.setParameterFromUI (ParamIDs::octave (3), 1.0f);
+        a.setParameterFromUI (ParamIDs::globalOctave, -1.0f);
         a.setChord (2, { 4, (int) fgl::ChordType::dom9 });
         a.editStep (1, 3, 'f');   // turns the groove into the user pattern
         a.editorScale = 1.3f;
@@ -151,6 +152,7 @@ namespace
         CHECK (std::abs (value (b, ParamIDs::swing) - 0.4f) < 1.0e-4f);
         CHECK (juce::roundToInt (value (b, ParamIDs::kit)) == 2);
         CHECK (b.laneOctave (3) == 1);
+        CHECK (b.currentSettings().globalOctave == -1);
         CHECK (b.chordAt (2) == (fgl::Chord { 4, (int) fgl::ChordType::dom9 }));
         CHECK (juce::roundToInt (value (b, ParamIDs::pattern)) == fgl::userPatternIndex());
         CHECK (b.stepSymbol (1, 3) == 'f');

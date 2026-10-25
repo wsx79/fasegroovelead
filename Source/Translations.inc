@@ -313,3 +313,6 @@
         { "Push chord changes (the last 8th plays the next chord)", "Anticipa i cambi d'accordo (l'ultimo ottavo suona l'accordo successivo)", "Anticipar los cambios de acorde (la última corchea toca el acorde siguiente)", "Anticiper les changements d'accord (la dernière croche joue l'accord suivant)", "Akkordwechsel vorziehen (die letzte Achtel spielt den nächsten Akkord)", "Antecipar as mudanças de acorde (a última colcheia toca o próximo acorde)" },
         { "Sustain", "Sustain", "Sustain", "Sustain", "Sustain", "Sustain" },
         { "Dead note", "Nota stoppata", "Nota muerta", "Note étouffée", "Dead Note", "Nota abafada" },
+
+{ "Global octave", "Ottava generale", "Octava global", "Octave globale", "Globale Oktave", "Oitava global" },
+{ "Transpose every lead lane by octaves, keeping its own octave offset", "Traspone tutte le corsie Lead per ottave, mantenendo gli scostamenti individuali", "Transpone todas las líneas por octavas conservando sus ajustes", "Transpose toutes les lignes par octaves en gardant leurs réglages", "Transponiert alle Lead-Spuren in Oktaven mit ihren eigenen Abständen", "Transpõe todas as linhas por oitavas mantendo seus ajustes" },

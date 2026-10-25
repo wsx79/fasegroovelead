@@ -544,7 +544,7 @@ void GrooveEngine::collectStep (long long step, const LeadSettings& s, const Lea
         const int contour = s.pattern == randomPatternIndex() ? lickContourFor (s.randomGenre) : 0;
         const int segmentLength = std::max (1, len / numSegments);
         const int melodicStep = std::clamp (s.segmentOrder[(size_t) (pos / segmentLength)], 0, numSegments - 1) * segmentLength + pos % segmentLength;
-        laneNotes ((Lane) lane, push ? nextChord : chord, push ? nextVoicing : voicing, melodicStep, s.octaves[(size_t) lane],
+        laneNotes ((Lane) lane, push ? nextChord : chord, push ? nextVoicing : voicing, melodicStep, s.octaves[(size_t) lane] + s.globalOctave,
                    notes, s.roomForBand, answer, contour, s.key, s.scale, s.riffSeed);
         for (auto& n : notes)
             n += transpose;
