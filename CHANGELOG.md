@@ -4,6 +4,12 @@
 
 All notable changes to **Fase Groove Lead**.
 
+## 0.1.2 — 2026-10-26
+
+- Pinned shared-module SHA and complete inventory checked offline and against its canonical source in CI; Lead included in default sync/check.
+- Translation catalogs checked for duplicate keys, including multiline entries; intentional common/product overrides remain supported.
+- Shared panel drawing replaces identical local helpers; layout, controls and musical generation remain unchanged.
+
 ## [0.1.1] - 2026-10-25
 
 - Global octave control for all lead lanes, saved in presets and available to host automation.

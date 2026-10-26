@@ -23,6 +23,9 @@ namespace FaseGroove
     /** A caption: upper case, small and dim. */
     void styleCaption (juce::Label&, const juce::String& text);
 
+    /** The shared panel chrome; layout and instrument-specific contents stay in each editor. */
+    void drawPanel (juce::Graphics&, juce::Rectangle<int> area, const juce::String& title);
+
     /** The editor a DragTile shrinks while its files are dragged into the DAW. */
     struct MiniModeHost
     {

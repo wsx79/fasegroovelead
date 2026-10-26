@@ -2,7 +2,7 @@
 
 *🇮🇹 [Guida in italiano](GUIDA.md)*
 
-This guide covers [v0.1.0](https://github.com/wsx79/fasegroovelead/releases/tag/v0.1.0). Buttons, menus, colours and layout follow the other family instruments; the lanes are dedicated to solo melody.
+This guide covers [v0.1.2](https://github.com/wsx79/fasegroovelead/releases/tag/v0.1.2). Buttons, menus, colours and layout follow the other family instruments; the lanes are dedicated to solo melody.
 
 **Arranger presets:** the thirteen `Arranger: …` styles use the shared family profiles. Choose the same genre in the other instruments and use LINK for tempo and transport; enable KEY to share key and scale.
 

@@ -2,7 +2,7 @@
 
 *🇬🇧 [English guide](GUIDE.md)*
 
-Questa guida descrive la [v0.1.0](https://github.com/wsx79/fasegroovelead/releases/tag/v0.1.0). Pulsanti, menu, colori e disposizione seguono gli altri strumenti della famiglia; le corsie sono dedicate alla melodia solista.
+Questa guida descrive la [v0.1.2](https://github.com/wsx79/fasegroovelead/releases/tag/v0.1.2). Pulsanti, menu, colori e disposizione seguono gli altri strumenti della famiglia; le corsie sono dedicate alla melodia solista.
 
 **Preset Arranger:** i tredici stili `Arranger: …` usano i profili comuni della famiglia. Scegli lo stesso genere negli altri strumenti e usa LINK per tempo e trasporto; attiva KEY per condividere tonalità e scala.
 

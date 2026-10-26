@@ -7,6 +7,8 @@
 
 #include <BinaryData.h>
 
+using FaseGroove::drawPanel;
+
 namespace
 {
     juce::Font font (float height, bool bold = false)
@@ -14,22 +16,6 @@ namespace
         return FamilyTheme::font (height, bold);
     }
 
-    void drawPanel (juce::Graphics& g, juce::Rectangle<int> area, const juce::String& title)
-    {
-        const auto r = area.toFloat();
-        g.setColour (Palette::panel);
-        g.fillRoundedRectangle (r, 8.0f);
-        g.setColour (Palette::panelEdge);
-        g.drawRoundedRectangle (r.reduced (0.5f), 8.0f, 1.0f);
-        if (title.isNotEmpty())
-        {
-            g.setColour (Palette::accent);
-            g.fillRoundedRectangle ((float) area.getX() + 12.0f, (float) area.getY() + 11.0f, 3.0f, 12.0f, 1.0f);
-            g.setColour (Palette::text.withAlpha (0.92f));
-            g.setFont (font (11.5f, true));
-            g.drawText (Localisation::upper (tr (title)), area.withHeight (34).withTrimmedLeft (21).withTrimmedRight (12), juce::Justification::centredLeft);
-        }
-    }
 
     const int clipBarChoices[] { 0, 1, 2, 4, 8, 16, FaseGrooveLeadProcessor::songArrangement };
     const int songBarChoices[] { 0, 1, 2, 4, 8, 12, 16, 24, 32 };
