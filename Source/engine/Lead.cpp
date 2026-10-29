@@ -221,8 +221,14 @@ void laneNotes (Lane lane, const ChordTones& chord, const ChordVoicing&, int ste
         const int index = ((d % 7) + 7) % 7;
         note = 60 + mod12 (key) + intervals[(size_t) index] + 12 * ((d - index) / 7);
     }
-    note += 12 * (octave + (roomForBand ? 1 : 0));
-    out.add (std::clamp (note, 36, 108));
+    // Fold the octave shift back into the playable range: clamping to 108 turned a
+    // high hook pushed up four octaves into one repeated pedal note.
+    int shifted = note + 12 * (octave + (roomForBand ? 1 : 0));
+    while (shifted > 96)
+        shifted -= 12;
+    while (shifted < 36)
+        shifted += 12;
+    out.add (shifted);
 }
 
 std::vector<int> laneNotes (Lane lane, const ChordTones& chord, int stepInBar, int octave)
